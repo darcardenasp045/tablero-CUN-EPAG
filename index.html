@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CUN | Proyecto II · Panadería Panzotty</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--navy:#14213d;--blue:#1f4e79;--cyan:#28a9c7;--orange:#f28c28;--yellow:#f5c542;--cream:#f5f7fb;--ink:#172033;--muted:#68758a;--white:#fff;--line:#e4e9f0;--green:#25a56a;--red:#d9534f}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--cream);color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),#203d68 65%,var(--blue));color:#fff;padding:25px 5vw 20px;box-shadow:0 4px 18px #0002;position:relative;z-index:2}
+.top{display:flex;justify-content:space-between;align-items:center;gap:20px}.logo{font-size:38px;font-weight:900;letter-spacing:-3px}.smallcaps{text-transform:uppercase;font-size:11px;letter-spacing:1.4px;opacity:.85}
+h1{font-size:clamp(24px,4vw,41px);line-height:1.05;margin:16px 0 8px}.sub{margin:0;max-width:1000px;color:#dbe7f5;font-size:14px}.team{font-size:12px;margin-top:12px}.team b{color:#ffd18a}
+nav{display:flex;gap:7px;flex-wrap:wrap;margin-top:19px}nav button{border:1px solid #ffffff38;background:#ffffff10;color:#fff;padding:9px 13px;border-radius:20px;cursor:pointer;font-weight:800;font-size:12px}nav button.active,nav button:hover{background:#fff;color:var(--navy)}
+main{width:min(1400px,92vw);margin:27px auto 50px}.page{display:none}.page.active{display:block}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.source{font-size:11px;color:var(--muted);background:#fff;border:1px solid var(--line);padding:9px 12px;border-radius:10px}.refresh{border:0;background:var(--navy);color:#fff;border-radius:10px;padding:10px 14px;font-weight:800;cursor:pointer}.refresh:disabled{opacity:.6}
+.status{font-size:11px;margin-left:8px}.ok{color:var(--green)}.err{color:var(--red)}
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:17px}.filter{background:#fff;border:1px solid var(--line);padding:11px 13px;border-radius:14px}.filter label{display:block;font-size:10px;font-weight:900;text-transform:uppercase;color:var(--muted);margin-bottom:5px}.filter select,.filter input{width:100%;border:0;outline:0;background:#fff;color:var(--ink);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:16px 0}.kpi{background:#fff;border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 5px 18px #16233d08}.num{font-size:31px;font-weight:900;color:var(--navy);margin-top:6px}.lbl{font-size:11px;color:var(--muted);font-weight:800;margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:15px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:0 5px 18px #16233d08}.card h2{font-size:16px;color:var(--navy);margin:0 0 5px}.note{font-size:11px;color:var(--muted);margin:2px 0 14px}.chartbox{height:300px;position:relative}
+.barlist{display:grid;gap:11px}.barrow{display:grid;grid-template-columns:155px 1fr 36px;gap:9px;align-items:center;font-size:12px}.track{height:9px;background:#edf0f5;border-radius:10px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--cyan));border-radius:10px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}.chip{background:#eef4fb;border:1px solid #dbe7f5;border-radius:20px;padding:8px 10px;font-size:11px;font-weight:800}
+.insight{border-left:5px solid var(--orange);background:linear-gradient(90deg,#fff7ec,#fff);padding:15px 17px;border-radius:12px;margin-top:15px;font-size:13px;line-height:1.5}
+.quote{font-size:13px;line-height:1.5;background:#f8fafc;padding:14px;border-radius:11px;margin:8px 0;border-left:4px solid var(--cyan)}.quote small{display:block;color:var(--muted);margin-top:5px}
+.tablewrap{overflow:auto;max-height:570px}table{width:100%;border-collapse:collapse;font-size:11px}th,td{text-align:left;padding:9px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f5f7fb;color:var(--navy);font-size:10px;text-transform:uppercase;position:sticky;top:0;z-index:1}
+.question-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.question-card{min-height:360px}.question-title{font-size:13px;font-weight:900;color:var(--navy);line-height:1.35;margin-bottom:10px}.qmeta{font-size:10px;color:var(--muted);margin-bottom:7px}
+.loading{padding:40px;text-align:center;color:var(--muted)}.errorbox{padding:18px;background:#fff0f0;border:1px solid #ffd0d0;border-radius:13px;color:#9f2d2d}
+footer{background:var(--navy);color:#d9e3f1;padding:23px 5vw;font-size:11px}.footerin{width:min(1400px,92vw);margin:auto;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2,.grid3,.question-grid{grid-template-columns:1fr}.filters{grid-template-columns:1fr}.barrow{grid-template-columns:120px 1fr 30px}}
+@media(max-width:550px){.kpis{grid-template-columns:1fr 1fr}.logo{font-size:30px}.chartbox{height:260px}}
+
+.section-intro{background:#fff;border:1px solid var(--line);border-radius:17px;padding:20px 22px;margin-bottom:16px;box-shadow:0 5px 18px #16233d08}
+.section-intro h2{margin:0 0 7px;color:var(--navy);font-size:21px}
+.section-intro p{margin:6px 0;color:var(--muted);font-size:13px;line-height:1.55}
+.source-pill{display:inline-block;margin-top:9px;background:#eef4fb;color:var(--blue);padding:6px 10px;border-radius:20px;font-size:11px;font-weight:800}
+.question-card{min-height:390px}
+.question-number{display:inline-block;background:var(--navy);color:#fff;border-radius:8px;padding:4px 8px;font-size:10px;font-weight:900;margin-bottom:8px}
+.question-title{font-size:14px;font-weight:900;color:var(--navy);line-height:1.45;margin-bottom:7px}
+.question-insight{background:#f8fafc;border-left:4px solid var(--cyan);padding:9px 11px;border-radius:8px;color:var(--muted);font-size:11px;line-height:1.45;margin-bottom:10px}
+.question-insight b{color:var(--navy)}
+@media(max-width:900px){.question-card{min-height:350px}}
+
+</style>
+</head>
+<body>
+<header>
+<div class="top"><div><div class="logo">CUN</div><div class="smallcaps">Corporación Unificada Nacional de Educación Superior</div></div><div class="smallcaps">Proyecto II · Alta Gerencia</div></div>
+<h1>Implementación de Canales Digitales como Estrategia de Modernización Empresarial en la Panadería Panzotty de Fontibón (Bogotá)</h1>
+<p class="sub">Tablero consolidado de <b>entrevistas</b> y <b>encuestas</b>. La información se consulta directamente desde las hojas de cálculo publicadas en Google Sheets.</p>
+<div class="team">Equipo: <b>Mirkz · Sergio · Jaime · Nancy · Daniel</b> · Actualización automática al recargar</div>
+<nav>
+<button class="active" data-page="inicio">Inicio</button>
+<button data-page="entrevista">Entrevista</button>
+<button data-page="encuesta">Encuesta</button>
+<button data-page="comparativo">Comparativo</button>
+</nav>
+</header>
+
+<main>
+<section id="inicio" class="page active">
+<div class="toolbar"><div><h2 style="margin:0;color:var(--navy)">Resumen del proyecto</h2><p class="note">Dos fuentes independientes para el mismo proyecto académico.</p></div><button class="refresh" id="refresh">↻ Actualizar datos <span id="status" class="status"></span></button></div>
+<div class="kpis" id="homeKpis"></div>
+<div class="grid2">
+<div class="card"><h2>Entrevista</h2><p class="note">Proyecto II · respuestas cualitativas sobre canales, capacidades digitales, pedidos, productos y valor percibido.</p><div id="interviewSummary" class="loading">Cargando...</div></div>
+<div class="card"><h2>Encuesta</h2><p class="note">Resultados cuantitativos de la encuesta del proyecto. Las preguntas se detectan directamente desde los encabezados de Google Sheets.</p><div id="surveySummary" class="loading">Cargando...</div></div>
+</div>
+<div class="insight"><b>Actualización:</b> el tablero no guarda una copia de los datos en el HTML. Cada vez que se publica una nueva respuesta en las hojas y se recarga el tablero, vuelve a consultar las dos fuentes CSV públicas.</div>
+</section>
+
+<section id="entrevista" class="page">
+<div class="toolbar"><div><h2 style="margin:0;color:var(--navy)">Análisis de entrevistas</h2><p class="note">Fuente: “Entrevista- Proyecto II ... (respuestas)”</p></div><span class="source">Google Sheets · CSV publicado</span></div>
+<div class="filters"><div class="filter"><label>Rol</label><select id="roleFilter"><option value="Todos">Todos</option></select></div><div class="filter"><label>Fecha</label><select id="dateFilter"><option value="Todos">Todas</option></select></div><div class="filter"><label>Entrevistado</label><input id="nameFilter" placeholder="Buscar nombre..."></div></div>
+<div class="kpis" id="interviewKpis"></div>
+<div class="grid2"><div class="card"><h2>Canales de comunicación</h2><p class="note">Clasificación automática de las respuestas.</p><div class="chartbox"><canvas id="channelChart"></canvas></div></div><div class="card"><h2>Nivel de conocimiento tecnológico</h2><p class="note">Clasificación analítica, conservando la respuesta original.</p><div class="chartbox"><canvas id="techChart"></canvas></div></div></div>
+<div class="grid2" style="margin-top:15px"><div class="card"><h2>Canales preferidos para pedidos</h2><div class="chartbox"><canvas id="orderChart"></canvas></div></div><div class="card"><h2>Percepción precio · calidad</h2><div class="chartbox"><canvas id="priceChart"></canvas></div></div></div>
+<div class="grid2" style="margin-top:15px"><div class="card"><h2>Temas recurrentes</h2><div id="themes" class="chips"></div></div><div class="card"><h2>Hallazgos</h2><div class="quote">La digitalización aparece como una oportunidad de visibilidad, crecimiento y modernización, pero con capacidades tecnológicas heterogéneas.</div><div class="quote">WhatsApp aparece de forma recurrente como canal de atención y pedido.</div><div class="quote">El valor artesanal se relaciona con frescura, ingredientes, sabor y procesos como la fermentación.</div></div></div>
+</section>
+
+<section id="encuesta" class="page">
+<div class="section-intro">
+<h2>Encuesta · Percepción del mercado frente a los canales digitales</h2>
+<p><b>Encuesta- Proyecto II "Implementación de Canales Digitales como Estrategia de Modernización Empresarial en la Panadería Panzotty de Fontibón (Bogotá)"</b></p>
+<p>Esta sección corresponde exclusivamente al instrumento de encuesta. A diferencia de la entrevista, aquí se presentan las respuestas estructuradas de los participantes para identificar hábitos digitales, conocimiento de Panzotty, canales preferidos, medios de descubrimiento, métodos de pago e interés en interactuar mediante canales digitales.</p>
+<span class="source-pill">📊 Fuente en vivo: Google Sheets publicado · se actualiza al recargar</span>
+</div>
+<div class="toolbar"><div><h2 style="margin:0;color:var(--navy)">Resultados de la encuesta</h2><p class="note">Cada tarjeta corresponde a una pregunta del instrumento.</p></div><span class="source">Google Sheets · CSV publicado</span></div>
+<div class="kpis" id="surveyKpis"></div>
+<div class="card" style="margin-bottom:15px"><h2>Lectura de la encuesta</h2><p class="note">Cada tarjeta representa una pregunta de respuesta cerrada o categórica. El tablero cuenta las respuestas válidas y muestra su distribución.</p></div>
+<div id="surveyQuestions" class="question-grid"></div>
+</section>
+
+<section id="comparativo" class="page">
+<h2 style="color:var(--navy)">Entrevista vs. encuesta</h2><p class="note">Las dos fuentes cumplen funciones distintas: la entrevista profundiza en percepciones y experiencias; la encuesta permite observar distribución de respuestas.</p>
+<div class="grid2">
+<div class="card"><h2>Entrevista</h2><div id="compareInterview"></div></div>
+<div class="card"><h2>Encuesta</h2><div id="compareSurvey"></div></div>
+</div>
+<div class="insight"><b>Uso académico:</b> esta separación permite presentar evidencia cualitativa y cuantitativa sin mezclar poblaciones, instrumentos ni preguntas.</div>
+</section>
+</main>
+
+<footer><div class="footerin"><span><b>CUN · Especialización en Alta Gerencia</b></span><span>Proyecto II · Panadería Panzotty de Fontibón</span><span>Datos consultados desde Google Sheets publicado</span></div></footer>
+
+<script>
+const SOURCES={
+ interview:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRe4Sqbp_zk6vjy0GlHkDXnpdHEJsT_i4mZiKTJkejfGf4LpfgNcvVA1GYWfNlv44fddyOBU-TylcHB/pub?gid=1872542842&single=true&output=csv',
+ survey:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRS-uYMG-h5vWYunKLzGltyqj4ExBekaAHh0pe96huJd_w8Ao5ggwWxVJ_cwesWlZmfIgHg_a6LuxiW/pub?gid=502306141&single=true&output=csv'
+};
+let interview=[],survey=[],charts={};
+
+function parseCSV(text){
+ const rows=[];let row=[],cell='',q=false;
+ for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];
+  if(c==='"'&&q&&n==='"'){cell+='"';i++;continue}
+  if(c==='"'){q=!q;continue}
+  if(c===','&&!q){row.push(cell);cell='';continue}
+  if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&n==='\n')i++;row.push(cell);if(row.some(x=>x.trim()!==''))rows.push(row);row=[];cell='';continue}
+  cell+=c;
+ }
+ if(cell!==''||row.length){row.push(cell);rows.push(row)}
+ const headers=(rows.shift()||[]).map(x=>x.trim());
+ return rows.map(r=>{const o={};headers.forEach((h,i)=>o[h]=(r[i]||'').trim());return o}).filter(o=>Object.values(o).some(Boolean));
+}
+function norm(s){return(s||'').toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')}
+function findCol(obj,patterns){
+ const keys=Object.keys(obj);return keys.find(k=>patterns.some(p=>norm(k).includes(norm(p))))||keys[0];
+}
+function vals(obj){return Object.values(obj)}
+function channels(s){const x=norm(s),o=[];if(/whats?app|wasap|watsap|watssapp/.test(x))o.push('WhatsApp');if(/instagram/.test(x))o.push('Instagram');if(/facebook/.test(x))o.push('Facebook');if(/rappi/.test(x))o.push('Rappi');if(/telefono|llamada|linea fija|telefonica/.test(x))o.push('Teléfono');if(/web|pagina web|tienda virtual/.test(x))o.push('Web');if(/google maps/.test(x))o.push('Google Maps');if(/tiktok/.test(x))o.push('TikTok');if(/correo/.test(x))o.push('Correo');return[...new Set(o)]}
+function orderChannels(s){const x=norm(s),o=[];if(/whats?app|wasap|watsap|watssapp/.test(x))o.push('WhatsApp');if(/instagram/.test(x))o.push('Instagram');if(/rappi/.test(x))o.push('Rappi');if(/llamada|telefono/.test(x))o.push('Teléfono');if(/web|plataforma digital|tienda virtual/.test(x))o.push('Web');if(/domicilio|domiciliario|mensajer/.test(x))o.push('Domicilio/mensajería');if(/fisico|recogida|puerta/.test(x))o.push('Recogida/físico');return[...new Set(o)]}
+function tech(s){const x=norm(s);if(/nulo|ninguno|desconozco|sin conocimientos|muy poco|conocimiento nulo|conocimientos nulos|empirico y minimo/.test(x))return'Nulo / muy bajo';if(/100 %|amplio conocimiento|ads e instagram|tiendas virtuales/.test(x))return'Alto';if(/intermedio|nivel medio|medio-bajo/.test(x))return'Medio';return'Básico / empírico'}
+function price(s){const x=norm(s);if(/justific|vale la pena|justa|adecuada|accesible|accesibles|buena|buen producto|acorde|razonable|pagan por calidad|plus|premium|prémium/.test(x))return'Favorable / justificado';if(/no se mantiene|unos buena|otros no|prefieren lo economico/.test(x))return'Mixta / sensible al precio';return'Relacionada con calidad/valor'}
+function countMulti(data,fn){const c={};data.forEach(r=>fn(r).forEach(v=>c[v]=(c[v]||0)+1));return c}
+function countSingle(data,fn){const c={};data.forEach(r=>{const v=fn(r);if(v)c[v]=(c[v]||0)+1});return c}
+function topObj(o,n=8){return Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n)}
+function chart(id,type,labels,data){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),{type,data:{labels,datasets:[{data,backgroundColor:['#14213d','#1f4e79','#28a9c7','#f28c28','#f5c542','#25a56a','#7d5fff','#d9534f'],borderWidth:0,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:type==='doughnut',position:'bottom'}},scales:type==='bar'?{y:{beginAtZero:true,ticks:{precision:0}}}:{}}})}
+function bars(id,o){const e=topObj(o,10),max=e[0]?.[1]||1;document.getElementById(id).innerHTML=e.map(([k,v])=>`<div class="barrow"><span>${esc(k)}</span><div class="track"><div class="fill" style="width:${v/max*100}%"></div></div><b>${v}</b></div>`).join('')}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+
+async function loadCSV(url){
+ const r=await fetch(url+'&_='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('No se pudo consultar la hoja');return parseCSV(await r.text());
+}
+function interviewCols(){
+ const r=interview[0]||{};const k=Object.keys(r);
+ return {
+ date:findCol(r,['marca temporal','timestamp','fecha']),
+ name:findCol(r,['nombre']),
+ role:findCol(r,['cargo/rol','cargo','rol']),
+ comm:k.find(x=>/^1\\./.test(x))||k[4],
+ techc:k.find(x=>/^2\\./.test(x))||k[5],
+ digital:k.find(x=>/^3\\./.test(x))||k[6],
+ order:k.find(x=>/^4\\./.test(x))||k[7],
+ product:k.find(x=>/^5\\./.test(x))||k[8],
+ price:k.find(x=>/^6\\./.test(x))||k[9]
+ }}
+function filteredInterviews(){
+ const c=interviewCols(),role=document.getElementById('roleFilter').value,date=document.getElementById('dateFilter').value,name=norm(document.getElementById('nameFilter').value);
+ return interview.filter(r=>(role==='Todos'||r[c.role]===role)&&(date==='Todos'||String(r[c.date]).slice(0,10)===date)&&(!name||norm(r[c.name]).includes(name)));
+}
+function renderInterview(){
+ const c=interviewCols(),d=filteredInterviews(),wa=d.filter(r=>channels(r[c.comm]).includes('WhatsApp')).length,digital=d.filter(r=>channels(r[c.comm]).length>0).length,fav=d.filter(r=>price(r[c.price])==='Favorable / justificado').length;
+ document.getElementById('interviewKpis').innerHTML=`<div class="kpi"><div class="num">${d.length}</div><div class="lbl">Entrevistas</div></div><div class="kpi"><div class="num">${d.length?Math.round(digital/d.length*100):0}%</div><div class="lbl">Con canal digital identificado</div></div><div class="kpi"><div class="num">${d.length?Math.round(wa/d.length*100):0}%</div><div class="lbl">Mencionan WhatsApp</div></div><div class="kpi"><div class="num">${d.length?Math.round(fav/d.length*100):0}%</div><div class="lbl">Valor percibido favorable</div></div>`;
+ const ch=countMulti(d,r=>channels(r[c.comm])),te=countSingle(d,r=>tech(r[c.techc])),or=countMulti(d,r=>orderChannels(r[c.order])),pr=countSingle(d,r=>price(r[c.price]));
+ chart('channelChart','bar',Object.keys(ch),Object.values(ch));chart('techChart','doughnut',Object.keys(te),Object.values(te));chart('orderChart','doughnut',Object.keys(or),Object.values(or));chart('priceChart','bar',Object.keys(pr),Object.values(pr));
+ const themes={'Crecimiento / ventas':0,'Visibilidad / posicionamiento':0,'Modernización':0,'Adaptación / reto':0,'Educación del cliente':0};d.forEach(r=>{const x=norm(r[c.digital]);if(/venta|crecer/.test(x))themes['Crecimiento / ventas']++;if(/visibil|posicion|dar a conocer|vitrina/.test(x))themes['Visibilidad / posicionamiento']++;if(/modern/.test(x))themes['Modernización']++;if(/reto|desafio|exigente|adaptacion|necesario|necesaria/.test(x))themes['Adaptación / reto']++;if(/historia|educar|educa|procesos/.test(x))themes['Educación del cliente']++});document.getElementById('themes').innerHTML=topObj(themes,10).map(([k,v])=>`<span class="chip">${k}: ${v}</span>`).join('');
+}
+function populateFilters(){
+ const c=interviewCols(),roles=[...new Set(interview.map(r=>r[c.role]).filter(Boolean))].sort(),dates=[...new Set(interview.map(r=>String(r[c.date]).slice(0,10)).filter(Boolean))].sort();
+ roleFilter.innerHTML='<option>Todos</option>'+roles.map(x=>`<option>${esc(x)}</option>`).join('');dateFilter.innerHTML='<option>Todos</option>'+dates.map(x=>`<option>${esc(x)}</option>`).join('');
+}
+function questionData(rows){
+ if(!rows.length)return[];
+ const keys=Object.keys(rows[0]).slice(1);
+ return keys.map(k=>{const raw=rows.map(r=>r[k]).filter(v=>v!==undefined&&String(v).trim()!=='');const c={};raw.forEach(v=>{const key=String(v).trim();c[key]=(c[key]||0)+1});return{key:k,total:raw.length,unique:Object.keys(c).length,counts:c}}).filter(q=>q.total);
+}
+function renderSurvey(){
+ const qs=questionData(survey);
+ const kpi=document.getElementById('surveyKpis');
+ const container=document.getElementById('surveyQuestions');
+ if(!survey.length){
+   kpi.innerHTML='';
+   container.innerHTML='<div class="errorbox">La hoja de encuesta no devolvió respuestas. Verifica que la publicación CSV siga activa.</div>';
+   return;
+ }
+ kpi.innerHTML=`<div class="kpi"><div class="num">${survey.length}</div><div class="lbl">Respuestas de encuesta</div></div>
+ <div class="kpi"><div class="num">${qs.length}</div><div class="lbl">Preguntas con datos</div></div>
+ <div class="kpi"><div class="num">${qs.reduce((a,q)=>a+q.total,0)}</div><div class="lbl">Respuestas válidas acumuladas</div></div>
+ <div class="kpi"><div class="num">Live</div><div class="lbl">Fuente Google Sheets</div></div>`;
+
+ container.innerHTML=qs.map((q,i)=>{
+   const e=topObj(q.counts,8);
+   const top=e[0]||['Sin datos',0];
+   const pct=q.total?Math.round(top[1]/q.total*100):0;
+   const multi=/seleccion multiple|plataformas digitales|canales digitales/i.test(q.key);
+   return `<div class="card question-card">
+     <span class="question-number">PREGUNTA ${i+1}</span>
+     <div class="question-title">${esc(q.key)}</div>
+     <div class="question-insight"><b>Lectura:</b> la opción más frecuente es “${esc(top[0])}”, con ${top[1]} respuesta(s)${q.total?' ('+pct+'%)':''}. ${multi?'Esta pregunta puede contener selección múltiple.':'La distribución corresponde a las respuestas registradas en la hoja.'}</div>
+     <div class="qmeta">${q.total} respuestas válidas · ${q.unique} opciones distintas</div>
+     <div class="chartbox"><canvas id="qchart${i}"></canvas></div>
+   </div>`;
+ }).join('');
+ qs.forEach((q,i)=>{
+   const e=topObj(q.counts,8);
+   chart('qchart'+i,'bar',e.map(x=>x[0]),e.map(x=>x[1]));
+ });
+}
+function renderHome(){
+ document.getElementById('homeKpis').innerHTML=`<div class="kpi"><div class="num">${interview.length}</div><div class="lbl">Respuestas de entrevista</div></div><div class="kpi"><div class="num">${survey.length}</div><div class="lbl">Respuestas de encuesta</div></div><div class="kpi"><div class="num">2</div><div class="lbl">Instrumentos de investigación</div></div><div class="kpi"><div class="num">Live</div><div class="lbl">Datos desde Google Sheets</div></div>`;
+ document.getElementById('interviewSummary').innerHTML=`<div class="barlist"><div class="barrow"><span>Respuestas</span><div class="track"><div class="fill" style="width:100%"></div></div><b>${interview.length}</b></div><div class="barrow"><span>Instrumento</span><div></div><b>Entrevista</b></div></div>`;
+ document.getElementById('surveySummary').innerHTML=`<div class="barlist"><div class="barrow"><span>Respuestas</span><div class="track"><div class="fill" style="width:100%"></div></div><b>${survey.length}</b></div><div class="barrow"><span>Instrumento</span><div></div><b>Encuesta</b></div></div>`;
+ document.getElementById('compareInterview').innerHTML=`<p><b>${interview.length}</b> registros.</p><p class="note">Profundiza en experiencias, percepciones, canales y capacidades tecnológicas.</p>`;
+ document.getElementById('compareSurvey').innerHTML=`<p><b>${survey.length}</b> registros.</p><p class="note">Permite observar la distribución de respuestas de las preguntas del instrumento cuantitativo.</p>`;
+}
+async function loadAll(){
+ const status=document.getElementById('status'),btn=document.getElementById('refresh');btn.disabled=true;status.textContent=' · consultando...';status.className='status';
+ try{[interview,survey]=await Promise.all([loadCSV(SOURCES.interview),loadCSV(SOURCES.survey)]);populateFilters();renderHome();renderInterview();renderSurvey();status.textContent=' · actualizado '+new Date().toLocaleTimeString('es-CO');status.className='status ok'}catch(e){status.textContent=' · error de conexión';status.className='status err';document.getElementById('homeKpis').innerHTML='<div class="errorbox">No fue posible leer una de las hojas publicadas. Verifica que ambas estén publicadas en Google Sheets y accesibles públicamente.</div>'}finally{btn.disabled=false}
+}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(b.dataset.page).classList.add('active')}));
+document.getElementById('refresh').addEventListener('click',loadAll);document.getElementById('roleFilter').addEventListener('change',renderInterview);document.getElementById('dateFilter').addEventListener('change',renderInterview);document.getElementById('nameFilter').addEventListener('input',renderInterview);
+loadAll();
+setInterval(loadAll, 5*60*1000);
+</script>
+</body>
+</html>
